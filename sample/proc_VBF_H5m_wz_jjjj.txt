@@ -1,0 +1,30 @@
+import model GM_NLO
+define v = z w+ w-
+generate p p > H5p~ j j $$v, (H5p~ > w- z, (w- > j j), (z > j j))
+output VBF_H5m_wz_jjjj1
+
+launch VBF_H5m_wz_jjjj1
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+done
+
+set param_card tanth 0.226480
+set param_card lam2 0.070070
+set param_card lam3 -1.331328
+set param_card lam4 1.364671
+set param_card lam5 -1.963271
+set param_card M1coeff 1046.827111
+set param_card M2coeff 135.30791
+
+set run_card nevents 10000
+set run_card ebeam1 6500.0
+set run_card ebeam2 6500.0
+set run_card cut_decays True
+set run_card ptj 50
+set run_card etaj 3
+
+/home/r10222035/boosted_V_ML_test/Cards/delphes_card.dat
+
+done

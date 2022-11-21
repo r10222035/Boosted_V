@@ -1,0 +1,38 @@
+import model GM_UFO
+define v = z w+ w-
+generate p p > H5pp~ j j $$v, (H5pp~ > w- w-, (w- > j j), (w- > j j))
+output VBF_H5mm_ww_jjjj-J
+
+launch VBF_H5mm_ww_jjjj-J
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+done
+
+set param_card tanth 2.234400e+01
+set param_card lam2 1.040100e+00
+set param_card lam3 8.829540e+00
+set param_card lam4 -2.232270e+00
+set param_card lam5 7.672600e+00
+set param_card M1coeff 1.000000e+02
+set param_card M2coeff 1.000000e+02
+
+set param_card wt 1.000000e+00
+set param_card wz 1.000000e+00
+set param_card ww 1.000000e+00
+set param_card wh Auto
+set param_card wh__2 Auto
+set param_card wh3p Auto
+set param_card wh3z Auto
+set param_card wh5pp Auto
+set param_card wh5p Auto
+set param_card wh5z Auto
+
+set run_card nevents 10000
+set run_card ebeam1 6500.0
+set run_card ebeam2 6500.0
+
+/home/r10222035/boosted_V_ML_test/Cards/delphes_card.dat
+
+done

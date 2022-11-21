@@ -1,0 +1,10 @@
+*.aux
+*.log
+*.out
+*.synctex.gz
+/Reference
+/CNN/best_model*
+.ipynb_checkpoints
+__pycache__
+samples_kappa*
+event_samples_kappa*
