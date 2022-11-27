@@ -149,7 +149,7 @@ def get_dataset(tfrecord_files,
                 dim_image=None,
                 flatten=False,
                 efpout=False,
-                num_parallel_calls=None, N_labels=3):
+                num_parallel_calls=None, N_labels=6):
     """Get tf.data.Dataset for a tfrecord file or list of tfrecord files. 
     repeat, shuffle, prefetch: settings for loading dataset
     """
