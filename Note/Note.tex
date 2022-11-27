@@ -621,7 +621,7 @@
 		\end{figure}
 		\begin{figure}[htpb]
 			\centering
-			\includegraphics[width=0.95\textwidth]{CNN_roc_auc_correct_width.png}
+			\includegraphics[width=0.70\textwidth]{CNN_roc_auc_correct_width.png}
 			\caption{The ROC curve of each vector boson for the CNN model. The plotting scheme is the same as Figure \ref{fig:CNN learning curve_correct_decay_width}.}
 			\label{fig:CNN roc curve_correct_decay_width}
 		\end{figure}
@@ -635,7 +635,7 @@
 		\end{figure}
 		\begin{figure}[htpb]
 			\centering
-			\includegraphics[width=0.95\textwidth]{CNNsq_roc_auc_correct_width.png}
+			\includegraphics[width=0.70\textwidth]{CNNsq_roc_auc_correct_width.png}
 			\caption{The ROC curve of each vector boson for the CNN$^2$ model. The plotting scheme is the same as Figure \ref{fig:CNN learning curve_correct_decay_width}.}
 			\label{fig:CNNsq roc curve_correct_decay_width}
 		\end{figure}
@@ -677,4 +677,53 @@
 
 	% subsection training_results (end)
 % section correct_decay_width_sample (end)		
+\section{Full event training}% (fold)
+\label{sec:full_event_training}
+	\subsection{Training sample size}% (fold)
+	\label{sub:full_event_training_sample_size}
+		The event sample size for each type is presented in Table \ref{tab:full_event_sample_size}
+		\begin{table}[htpb]
+			\centering
+			\caption{The sample size for each type. 80\% samples are used in training, and 20\% samples are used in testing.}
+			\label{tab:full_event_sample_size}
+			\begin{tabular}{c|c|c|c|c|c|c|c}
+			Case &$\kappa$& $W^+W^+$ & $W^-W^-$ & $ZZ$ & $W^+Z$ & $W^-Z$ & $W^+W^-$ \\ \hline
+			1    & 0.15   & 47k      & 51k      & 38k  & 42k    & 44k    & 48k     
+			\end{tabular}
+		\end{table}
+	% subsection full_event_training_sample_size (end)
+	\subsection{Training results}% (fold)
+	\label{sub:full_event_training_results}
+		The training results are summarized in Table \ref{tab:training_result_event}.
+		\begin{table}[htpb]
+			\centering
+			\caption{The training results of the full event.}
+			\label{tab:training_result_event}
+			\resizebox{\textwidth}{!}{
+			\begin{tabular}{c|c|c|cc|cc|cc|cc|cc|cc}
+										 &                    & Overall & \multicolumn{2}{c}{$W^+W^+$} & \multicolumn{2}{c}{$W^-W^-$} & \multicolumn{2}{c}{$ZZ$} & \multicolumn{2}{c}{$W^+Z$} & \multicolumn{2}{c}{$W^-Z$} & \multicolumn{2}{c}{$W^+W^-$} \\
+					  & Sample             & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   \\ \hline
+			CNN       & \multirow{2}{*}{1} & 0.451 & 0.860 & 0.858 & 0.855 & 0.850 & 0.797 & 0.868 & 0.740 & 0.845 & 0.737 & 0.842 & 0.741 & 0.830 \\
+			CNN${}^2$ &                    & 0.379 & 0.830 & 0.846 & 0.822 & 0.837 & 0.684 & 0.858 & 0.687 & 0.842 & 0.686 & 0.840 & 0.690 & 0.826
+			\end{tabular}			
+			}
+		\end{table}
+
+		For CNN, the overall accuracy is 45.1\%. For $\text{CNN}^2$, the overall accuracy is only $37.9 \%$.
+
+		Figure \ref{fig:CNN_event_roc_015} is CNN's ROC.  Figure \ref{fig:CNNsq_event_roc_015} is CNN${}^2$'s ROC.
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.65\textwidth]{event_ROC_CNN_kappa0.15-1000k.png}
+			\caption{CNN's ROC of each event type. $\kappa=0.15$.}
+			\label{fig:CNN_event_roc_015}
+		\end{figure}
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.65\textwidth]{event_ROC_CNNsq_kappa0.15-1000k.png}
+			\caption{CNN$^2$'s ROC of each event type. $\kappa=0.15$.}
+			\label{fig:CNNsq_event_roc_015}
+		\end{figure}
+	% subsection full_event_training_results (end)	
+% section full_event_training (end)		
 \end{document} 
