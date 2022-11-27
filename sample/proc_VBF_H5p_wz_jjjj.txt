@@ -1,30 +1,35 @@
-import model GM_NLO
+import model GM_UFO
 define v = z w+ w-
 generate p p > H5p j j $$v, (H5p > w+ z, (w+ > j j), (z > j j))
-output VBF_H5p_wz_jjjj1
+output VBF_H5p_wz_jjjj
 
-launch VBF_H5p_wz_jjjj1
+launch VBF_H5p_wz_jjjj
 
 shower=Pythia8
 detector=Delphes
 analysis=OFF
 done
 
-set param_card tanth 0.226480
-set param_card lam2 0.070070
-set param_card lam3 -1.331328
-set param_card lam4 1.364671
-set param_card lam5 -1.963271
-set param_card M1coeff 1046.827111
-set param_card M2coeff 135.30791
+set param_card tanth 2.234400e+01
+set param_card lam2 1.040100e+00
+set param_card lam3 8.829540e+00
+set param_card lam4 -2.232270e+00
+set param_card lam5 7.672600e+00
+set param_card M1coeff 1.000000e+02
+set param_card M2coeff 1.000000e+02
+
+set param_card wh Auto
+set param_card wh__2 Auto
+set param_card wh3p Auto
+set param_card wh3z Auto
+set param_card wh5pp Auto
+set param_card wh5p Auto
+set param_card wh5z Auto
 
 set run_card nevents 10000
 set run_card ebeam1 6500.0
 set run_card ebeam2 6500.0
-set run_card cut_decays True
-set run_card ptj 50
-set run_card etaj 3
 
-/home/r10222035/boosted_V_ML_test/Cards/delphes_card.dat
+../Cards/delphes_card.dat
 
 done
