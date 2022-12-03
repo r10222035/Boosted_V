@@ -3,7 +3,6 @@
 # python extract.py <kappa value> <root_file_path>
 # extract full event training data
 
-
 import sys
 import re
 import os
@@ -157,6 +156,16 @@ def sample_selection(File, kappa, pbar, imageWriter):
                     break
                     
         if len(event_jet) < 4:
+            pbar.update(1)
+            continue
+            
+        # PT > 30 GeV
+        if event_jet[3].PT < 30:
+            pbar.update(1)
+            continue
+            
+        # |dEta| > 2
+        if abs(event_jet[2].Eta - event_jet[3].Eta) < 2:
             pbar.update(1)
             continue
         
