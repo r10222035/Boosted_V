@@ -16,35 +16,6 @@ from readTFR import *
 
 os.environ['CUDA_VISIBLE_DEVICES']='1'
 
-class CNN(tf.keras.Model):
-    def __init__(self, name='CNN', dim_image=(75, 75, 2), n_class=3):
-        super(CNN, self).__init__(name=name)
-        
-        self.ptqk = tf.keras.Sequential([
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Conv2D(32, (6,6), padding='same', activation='relu', kernel_regularizer=tf.keras.regularizers.L2(0.01)),
-            tf.keras.layers.MaxPool2D((2,2)),
-            tf.keras.layers.Conv2D(128, (4,4), padding='same', activation='relu'),
-            tf.keras.layers.MaxPool2D((2,2)),
-            tf.keras.layers.Conv2D(256, (6,6), padding='same', activation='relu'),
-            tf.keras.layers.MaxPool2D((2,2)),
-            tf.keras.layers.Dropout(0.1),
-            tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(512, activation='relu', kernel_regularizer=tf.keras.regularizers.L2(0.01)),
-            tf.keras.layers.Dropout(0.5),
-            tf.keras.layers.Dense(512, activation='relu', kernel_regularizer=tf.keras.regularizers.L2(0.01)),
-            tf.keras.layers.Dropout(0.5),
-        ])
-        
-        """Output Layer"""
-        self._output = tf.keras.layers.Dense(n_class, activation='softmax')
-        
-    @tf.function
-    def call(self, inputs, training=False):
-        latent_ptqk = self.ptqk(inputs)
-        
-        return self._output(latent_ptqk)
-
 def count_sample_size(y, n_type=6):
     # count sample size 
     size = [(y == i).sum() for i in range(n_type)]
@@ -55,7 +26,8 @@ def main():
     nevent = sys.argv[2]
 
     batch_size = 512
-    dim_image = [[75, 75], [[-3, 3], [-3, 3]]]
+    res = 75
+    dim_image = [[res, res], [[-3, 3], [-3, 3]]]
 
     # Input datasets
     sample_dir = f'/home/r10222035/Boosted_V/sample/event_samples_kappa{kappa}-{nevent}/'
@@ -107,9 +79,25 @@ def main():
     learning_rate = 1e-4                                    
     save_model_name = f'best_model/best_model_event_CNN_kappa{kappa}-{nevent}/'
 
-    # Create the model  
+    # Create the model
+    model = tf.keras.Sequential([
+            tf.keras.Input(shape=(*dim_image[0],2)),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D(32, (6,6), padding='same', activation='relu', kernel_regularizer=tf.keras.regularizers.L2(0.01)),
+            tf.keras.layers.MaxPool2D((2,2)),
+            tf.keras.layers.Conv2D(128, (4,4), padding='same', activation='relu'),
+            tf.keras.layers.MaxPool2D((2,2)),
+            tf.keras.layers.Conv2D(256, (6,6), padding='same', activation='relu'),
+            tf.keras.layers.MaxPool2D((2,2)),
+            tf.keras.layers.Dropout(0.1),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(512, activation='relu', kernel_regularizer=tf.keras.regularizers.L2(0.01)),
+            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Dense(512, activation='relu', kernel_regularizer=tf.keras.regularizers.L2(0.01)),
+            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Dense(6, activation='softmax')
+        ])
     history=0
-    model = CNN(dim_image=[75,75,2], n_class=6)
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate), 
                 loss=tf.keras.losses.CategoricalCrossentropy(from_logits=False),
                 metrics=['accuracy'])
@@ -140,7 +128,7 @@ def main():
     ax.set_ylabel('Loss (categorical cross-entropy)')
     ax.legend()
     plt.savefig(f'figures/event_loss_curve_CNN_kappa{kappa}-{nevent}.png', facecolor='White', dpi=300, bbox_inches = 'tight')
-#     plt.show()
+
 
     fig, ax = plt.subplots(1,1, figsize=(6,5))
 
@@ -156,7 +144,6 @@ def main():
     ax.set_ylabel('Accuracy')
     ax.legend()
     plt.savefig(f'figures/event_accuracy_curve_CNN_kappa{kappa}-{nevent}.png', facecolor='White', dpi=300, bbox_inches = 'tight')
-#     plt.show()
 
     # plot ROC
     labels = np.vstack([x[1] for x in dataset_te])

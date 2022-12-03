@@ -1,12 +1,20 @@
 kappa_value=0.15
-nevent="1000k"
+resolution=15
+nevent="1000k-15x15-75x75"
 
-python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5pp_ww_jjjj-c/Events/run_02/tag_1_delphes_events.root &
-python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5mm_ww_jjjj-c/Events/run_02/tag_1_delphes_events.root &
-python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5z_zz_jjjj-c/Events/run_02/tag_1_delphes_events.root &
-python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5p_wz_jjjj/Events/run_02/tag_1_delphes_events.root &
-python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5m_wz_jjjj/Events/run_02/tag_1_delphes_events.root &
-python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5z_ww_jjjj/Events/run_02/tag_1_delphes_events.root &
+# python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5pp_ww_jjjj/Events/run_02/tag_1_delphes_events.root &
+# python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5mm_ww_jjjj/Events/run_02/tag_1_delphes_events.root &
+# python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5z_zz_jjjj/Events/run_02/tag_1_delphes_events.root &
+# python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5p_wz_jjjj/Events/run_02/tag_1_delphes_events.root &
+# python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5m_wz_jjjj/Events/run_02/tag_1_delphes_events.root &
+# python extract.py $kappa_value /home/r10222035/Boosted_V/sample/VBF_H5z_ww_jjjj/Events/run_02/tag_1_delphes_events.root &
+
+python extract-resolution-resize.py $kappa_value $resolution /home/r10222035/Boosted_V/sample/VBF_H5pp_ww_jjjj/Events/run_02/tag_1_delphes_events.root &
+python extract-resolution-resize.py $kappa_value $resolution /home/r10222035/Boosted_V/sample/VBF_H5mm_ww_jjjj/Events/run_02/tag_1_delphes_events.root &
+python extract-resolution-resize.py $kappa_value $resolution /home/r10222035/Boosted_V/sample/VBF_H5z_zz_jjjj/Events/run_02/tag_1_delphes_events.root &
+python extract-resolution-resize.py $kappa_value $resolution /home/r10222035/Boosted_V/sample/VBF_H5p_wz_jjjj/Events/run_02/tag_1_delphes_events.root &
+python extract-resolution-resize.py $kappa_value $resolution /home/r10222035/Boosted_V/sample/VBF_H5m_wz_jjjj/Events/run_02/tag_1_delphes_events.root &
+python extract-resolution-resize.py $kappa_value $resolution /home/r10222035/Boosted_V/sample/VBF_H5z_ww_jjjj/Events/run_02/tag_1_delphes_events.root &
 
 wait
 
