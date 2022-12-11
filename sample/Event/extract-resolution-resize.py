@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-# python extract.py <kappa value> <root_file_path>
+# python extract-resolution-resize.py <kappa value> <resolution> <root_file_path>
+# python extract-resolution-resize.py 0.15 25 <root_file_path>
 # extract full event training data
 
 import sys
@@ -95,13 +96,10 @@ def preprocess(constituents, kappa):
 
     return pts, eta_news, phi_news, Q_kappas
 
-def sample_selection(File, kappa, pbar, imageWriter):
+def sample_selection(File, kappa, res, pbar, imageWriter):
     n_sample = 0
     data = []
     for event_id, event in tqdm(enumerate(File)):
-#         if event_id > 100:
-#             break
-        
         # PT in (350, 450) GeV & |eta| < 1 for 2 jets
         Jets = []
         for jet in event.Jet:
@@ -174,8 +172,11 @@ def sample_selection(File, kappa, pbar, imageWriter):
         pt_news, eta_news, phi_news, Q_kappas = preprocess(constituents, kappa)
 
         plot_range = [[-3,3], [-3,3]]
-        hpT, _, _ = np.histogram2d(eta_news, phi_news, range=plot_range, bins=(75, 75), weights=pt_news)
-        hQk, _, _ = np.histogram2d(eta_news, phi_news, range=plot_range, bins=(75, 75), weights=Q_kappas)
+        resolutions = [res, res]
+        hpT, _, _ = np.histogram2d(eta_news, phi_news, range=plot_range, bins=resolutions, weights=pt_news)
+        hQk, _, _ = np.histogram2d(eta_news, phi_news, range=plot_range, bins=resolutions, weights=Q_kappas)
+        hpT = hpT.repeat(75/res, axis=0).repeat(75/res, axis=1)
+        hQk = hQk.repeat(75/res, axis=0).repeat(75/res, axis=1)
         
         json_obj = {'event_type': '', 'pT': '', 'Qk': '', 'event_mass':'', 'event_Charge':''}
 
@@ -208,23 +209,24 @@ def sample_selection(File, kappa, pbar, imageWriter):
 def main():
     # the input root files should be same type
     kappa = float(sys.argv[1])
+    res = int(sys.argv[2])
     
     # read all root files. 
     chain = r.TChain('Delphes')
-    for rootfile in sys.argv[2:]:
+    for rootfile in sys.argv[3:]:
         chain.Add(rootfile)
         
     nevent = chain.GetEntries()
     
     output_dir = '/'
-    for text in sys.argv[2].split('/'):
+    for text in sys.argv[3].split('/'):
         match = re.match('VBF_H5(pp_ww|mm_ww|z_zz|p_wz|m_wz|z_ww)_jjjj', text)
         if match:
             input_file_name = match.group()
             break
         output_dir = os.path.join(output_dir, text)
 
-    output_dir = os.path.join(output_dir, f'event_samples_kappa{kappa}-{nevent//1000}k')
+    output_dir = os.path.join(output_dir, f'event_samples_kappa{kappa}-{nevent//1000}k-{res}x{res}-75x75')
     
     # create output directory
     if (not os.path.isdir(output_dir)):
@@ -235,7 +237,7 @@ def main():
     property_file = os.path.join(output_dir, f'{input_file_name}_properties.txt')
         
     with tqdm(total=chain.GetEntries()) as pbar, open(image_name, 'wb') as imagewriter:
-        n_sample, data = sample_selection(chain, kappa, pbar, imagewriter)
+        n_sample, data = sample_selection(chain, kappa, res, pbar, imagewriter)
         
     with open(count_name, 'w') as f:
         f.write(f'{n_sample}')

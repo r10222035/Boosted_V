@@ -1,9 +1,9 @@
 import model GM_UFO
 define v = z w+ w-
 generate p p > H5z j j $$v, (H5z > z z, (z > j j), (z > j j))
-output VBF_H5z_zz_jjjj-c
+output VBF_H5z_zz_jjjj
 
-launch VBF_H5z_zz_jjjj-c
+launch VBF_H5z_zz_jjjj
 
 shower=Pythia8
 detector=Delphes
