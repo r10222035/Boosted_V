@@ -63,7 +63,7 @@
 %
 \usepackage{graphicx}
 \usepackage{subfig}
-\usepackage{subcaption}
+%\usepackage{subcaption}
 %
 \graphicspath{{figures/}}
 
@@ -842,5 +842,360 @@
 		\caption{The middle layer output of event image. The resolution $75\times 75$, $25\times 25$, and $15\times 15$ are used. The rescaled ones are also shown for resolution $25\times 25$ and $15\times 15$.}
 		\label{fig:CNN_middle_layer_output}
 	\end{figure}
-% section middle_layer_output (end)		
+% section middle_layer_output (end)
+\section{Requirements of forward jet 2}% (fold)
+\label{sec:requirements_of_forward_jet_2}
+	In this section, the $\Delta\eta$ and $p_\text{T}$ cuts on the forward jets were applied on the MadGraph level, i.e., the \verb+deltaeta+ and \verb+ptj+ cuts in the run card are turned on. Following are the MadGraph scripts for generating $W^{+}W^{+}$ sample:
+	\begin{verbatim}
+	import model GM_UFO
+	define v = z w+ w-
+	generate p p > H5pp j j $$v, (H5pp > w+ w+, (w+ > j j), (w+ > j j))
+	output VBF_H5pp_ww_jjjj-2
+
+	launch VBF_H5pp_ww_jjjj-2
+
+	shower=Pythia8
+	detector=Delphes
+	analysis=OFF
+	done
+
+	set param_card tanth 0.226480
+	set param_card lam2 0.070070
+	set param_card lam3 -1.331328
+	set param_card lam4 1.364671
+	set param_card lam5 -1.963271
+	set param_card M1coeff 1046.827111
+	set param_card M2coeff 135.30791
+
+	set param_card wh Auto
+	set param_card wh__2 Auto
+	set param_card wh3p Auto
+	set param_card wh3z Auto
+	set param_card wh5pp Auto
+	set param_card wh5p Auto
+	set param_card wh5z Auto
+
+	set run_card nevents 10000
+	set run_card ebeam1 6500.0
+	set run_card ebeam2 6500.0
+	set run_card cut_decays True
+	set run_card ptj 50
+	set run_card etaj 5
+	set run_card deltaeta 2
+
+	/home/r10222035/Boosted_V/Cards/delphes_card.dat
+
+	done
+	\end{verbatim}
+
+	The pixelating range is changed to $\Delta\eta = 10$ and  $\Delta\phi = 2\pi$.
+	\subsection{Sample plots}% (fold)
+	\label{sub:sample_plots}
+		 Figure \ref{fig:event_image_PT_deltaeta}, \ref{fig:event_image_Qk_deltaeta} are the average event images of $p_\text{T}$ and $\mathcal{Q}_\kappa$.
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.95\textwidth]{event_image_PT-deltaeta.png}
+			\caption{Average of event images in the $p_\text{T}$ channel.}
+			\label{fig:event_image_PT_deltaeta}
+		\end{figure}
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.95\textwidth]{event_image_Qk-deltaeta.png}
+			\caption{Average of event images in the $\mathcal{Q}_\kappa$ channel, with $\kappa = 0.15$.}
+			\label{fig:event_image_Qk_deltaeta}
+		\end{figure}
+
+		Figure \ref{fig:event_image_PT_ZZ-W+W+_deltaeta} is the $ZZ$ event image minus $W^{+}W^{+}$ event image in $p_\text{T}$ channel.
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.5\textwidth]{event_image_PT_ZZ-W+W+-deltaeta.png}
+			\caption{The difference between the $ZZ$ and $W^{+}W^{+}$ average event images in $p_\text{T}$ channel.}
+			\label{fig:event_image_PT_ZZ-W+W+_deltaeta}
+		\end{figure}
+
+	% subsection sample_plots (end)
+	\subsection{Training results}% (fold)
+	\label{sub:training_results_deltaeta}
+		Table \ref{tab:full_event_sample_size_deltaeta} presents the event sample size for each type.
+		\begin{table}[htpb]
+			\centering
+			\caption{The sample size for each type. 80\% samples are used in training, and 20\% samples are used in testing.}
+			\label{tab:full_event_sample_size_deltaeta}
+			\begin{tabular}{c|c|c|c|c|c|c|c}
+			Case & $\kappa$ & $W^+W^+$ & $W^-W^-$ & $ZZ$ & $W^+Z$ & $W^-Z$ & $W^+W^-$ \\ \hline
+			1    & 0.15     & 9k      & 8k      & 14k  & 11k    & 11k    & 9k      
+			\end{tabular}
+		\end{table}
+
+		The training results are summarized in Table \ref{tab:training_result_event_deltaeta}. 
+		
+		\begin{table}[htpb]
+			\centering
+			\caption{The training results of the full event. The $N \times N$ means the resolution in the pixelating step. The $N \times N \to 75 \times 75$ means the samples are rescaled back to $75 \times  75$.}
+			\label{tab:training_result_event_deltaeta}
+			\resizebox{\textwidth}{!}{
+			\begin{tabular}{c|c|c|cc|cc|cc|cc|cc|cc}
+										 &                    & Overall & \multicolumn{2}{c}{$W^+W^+$} & \multicolumn{2}{c}{$W^-W^-$} & \multicolumn{2}{c}{$ZZ$} & \multicolumn{2}{c}{$W^+Z$} & \multicolumn{2}{c}{$W^-Z$} & \multicolumn{2}{c}{$W^+W^-$} \\
+			    & Sample         & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   \\ \hline
+			CNN & $75 \times 75$                  & 0.386 & 0.839 & 0.872 & 0.824 & 0.882 & 0.760 & 0.799 & 0.689 & 0.812 & 0.705 & 0.816 & 0.720 & 0.854 \\
+			CNN & $25 \times 25$                  & 0.341 & 0.807 & 0.863 & 0.796 & 0.880 & 0.663 & 0.781 & 0.660 & 0.810 & 0.687 & 0.820 & 0.648 & 0.856 \\
+			CNN & $15 \times 15$                  & 0.313 & 0.790 & 0.863 & 0.776 & 0.877 & 0.628 & 0.782 & 0.650 & 0.815 & 0.668 & 0.822 & 0.640 & 0.846 \\
+			CNN & $25 \times 25 \to 75 \times 75$ & 0.343 & 0.814 & 0.863 & 0.797 & 0.878 & 0.674 & 0.781 & 0.666 & 0.817 & 0.688 & 0.818 & 0.664 & 0.854 \\
+			CNN & $15 \times 15 \to 75 \times 75$ & 0.324 & 0.800 & 0.861 & 0.785 & 0.878 & 0.646 & 0.780 & 0.654 & 0.815 & 0.675 & 0.821 & 0.651 & 0.853
+			\end{tabular}			
+			}
+		\end{table}
+
+	% subsection training_results (end)		
+% section requirements_of_forward_jet_2 (end)	
+\section{\texorpdfstring{$\Delta \eta > 1$}{delta eta 1} sample}% (fold)
+\label{sec:delta_eta_1_sample}
+	This section generates the sample with loose $\Delta\eta$ cut at the MadGraph level, but still, imposes the $\Delta\eta > 2$ at the selection stage. The forward jets are required the matching condition: $\Delta R(q, j) < 0.3$ with  $p_\text{T} > \text{10 GeV}$.
+
+	Following are the MadGraph scripts for generating $W^{+}W^{+}$ sample:
+	\begin{verbatim}
+	import model GM_NLO
+	define v = z w+ w-
+	generate p p > H5pp j j $$v, (H5pp > w+ w+, (w+ > j j), (w+ > j j))
+	output VBF_H5pp_ww_jjjj-deltaeta1
+
+	launch VBF_H5pp_ww_jjjj-deltaeta1
+
+	shower=Pythia8
+	detector=Delphes
+	analysis=OFF
+	done
+
+	set param_card tanth 0.226480
+	set param_card lam2 0.070070
+	set param_card lam3 -1.331328
+	set param_card lam4 1.364671
+	set param_card lam5 -1.963271
+	set param_card M1coeff 1046.827111
+	set param_card M2coeff 135.30791
+
+	set param_card wh Auto
+	set param_card wh__2 Auto
+	set param_card wh3p Auto
+	set param_card wh3z Auto
+	set param_card wh5pp Auto
+	set param_card wh5p Auto
+	set param_card wh5z Auto
+
+	set run_card nevents 10000
+	set run_card ebeam1 6500.0
+	set run_card ebeam2 6500.0
+	set run_card cut_decays True
+	set run_card ptj 5
+	set run_card etaj 5
+	set run_card deltaeta 1
+
+	/home/r10222035/Boosted_V/Cards/delphes_card.dat
+
+	done
+	\end{verbatim}
+	\subsection{Sample plots}% (fold)
+	\label{sub:sample_plots}
+		Table \ref{tab:full_event_sample_size_deltaeta1} presents the event sample size for each type. In beginning, there are one million events for each type.
+		\begin{table}[htpb]
+			\centering
+			\caption{The sample size for each type. 80\% samples are used in training, and 20\% samples are used in testing.}
+			\label{tab:full_event_sample_size_deltaeta1}
+			\begin{tabular}{c|c|c|c|c|c|c|c}
+			Case & $\kappa$ & $W^+W^+$ & $W^-W^-$ & $ZZ$ & $W^+Z$ & $W^-Z$ & $W^+W^-$ \\ \hline
+			1    & 0.15     & 5k      & 5k      & 5k  & 5k    & 5k    & 5k      
+			\end{tabular}
+		\end{table}
+
+		Figure \ref{fig:event_image_PT_deltaeta1}, \ref{fig:event_image_Qk_deltaeta1} are the average event images of $p_\text{T}$ and $\mathcal{Q}_\kappa$.
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.95\textwidth]{event_image_PT-deltaeta1.png}
+			\caption{Average of event images in the $p_\text{T}$ channel.}
+			\label{fig:event_image_PT_deltaeta1}
+		\end{figure}
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.95\textwidth]{event_image_Qk-deltaeta1.png}
+			\caption{Average of event images in the $\mathcal{Q}_\kappa$ channel, with $\kappa = 0.15$.}
+			\label{fig:event_image_Qk_deltaeta1}
+		\end{figure}
+
+		Figure \ref{fig:event_image_PT_ZZ-W+W+_deltaeta1} is the $ZZ$ event image minus $W^{+}W^{+}$ event image in $p_\text{T}$ channel.
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.5\textwidth]{event_image_PT_ZZ-W+W+-deltaeta.png}
+			\caption{The difference between the $ZZ$ and $W^{+}W^{+}$ average event images in $p_\text{T}$ channel.}
+			\label{fig:event_image_PT_ZZ-W+W+_deltaeta1}
+		\end{figure}
+	% subsection sample_plots (end)
+
+% section delta_eta_1_sample (end)		
+\section{Background sample}% (fold)
+\label{sec:background_sample}
+	This section generates the QCD background sample. Following are the MadGraph scripts for generating background samples:
+	\begin{verbatim}
+	define p = p b b~
+	define j = j b b~
+
+	generate p p > j j j j
+
+	output proc_ppjjjj
+
+	launch proc_ppjjjj
+
+	shower=Pythia8
+	detector=Delphes
+	analysis=OFF
+	done
+
+	set run_card nevents 10000
+	set run_card ebeam1 6500.0
+	set run_card ebeam2 6500.0
+	set run_card cut_decays True
+	set run_card ptj 50
+	set run_card etaj 5
+	set run_card ptj1min 300
+	set run_card ptj2min 300
+	set run_card ptj1max 500
+	set run_card ptj2max 500
+
+	../Cards/delphes_card.dat
+
+	done
+	\end{verbatim}
+	In the script, the \verb+ptj1min+ and \verb+ptj2min+ are set to 300, which means the $p_\text{T}$ of the leading and sub-leading jet need to greater than $300\text{ GeV}$. 
+	\subsection{Background sample selection}% (fold)
+	\label{sub:background_sample_selection}
+		The vector boson jet's requirements:
+		\begin{enumerate}
+			\item The transverse momentum of jet is required $p_\text{T} \in (350, 450) \text{ GeV}$ and in range $\abs{\eta}<1$.
+		\end{enumerate}
+		The events with less than two jets passing vector boson jets requirements will be discarded.
+
+		The forward jets requirements: Select the two highest $p_\text{T}$ jets from the remaining jets, then check the following requirements
+		\begin{enumerate}
+			\item The transverse momentum of jets are required $p_\text{T} > \text{30 GeV}$.
+			\item The difference of pseudorapidity of the two jets is required $\abs{\Delta \eta} > 2$.
+		\end{enumerate}
+		The event will be discarded if the two jets can not pass the above requirements.
+
+	% subsection background_sample_selection (end)
+	\subsection{Background sample plots}% (fold)
+	\label{sub:background_sample_plots}
+		After the sample selection, we can construct the event image. The event image contains all jets from the event. The event image is constructed by the following steps:
+		\begin{enumerate}
+			\item Centralization: Calculating the $p_\text{T}$ weighted center in $\phi$ coordinate, then shift this point to origin.
+			\item Flipping: Flip the highest intensity quadrant to the first quadrant. 
+			\item Pixelating in $\eta \in [-5, 5],  \phi \in [-\pi, \pi]$ box, with $75\times 75$ pixels.
+		\end{enumerate}
+
+		In 1M events, 15k events can pass the selection. These events are used to draw the following plots. Figure \ref{fig:event_image_PT_background}, \ref{fig:event_image_Qk_background} are the average event images of $p_\text{T}$ and $\mathcal{Q}_\kappa$.
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.45\textwidth]{event_image_PT-background.png}
+			\caption{Average of event images in the $p_\text{T}$ channel.}
+			\label{fig:event_image_PT_background}
+		\end{figure}
+		\begin{figure}[htpb]
+			\centering
+			\includegraphics[width=0.45\textwidth]{event_image_Qk-background.png}
+			\caption{Average of event images in the $\mathcal{Q}_\kappa$ channel, with $\kappa = 0.23$.}
+			\label{fig:event_image_Qk_background}
+		\end{figure}
+
+	% subsection background_sample_plots (end)	
+% section background_sample (end)		
+\section{ResNet}% (fold)
+\label{sec:resnet}
+	Implemented the ResNet structure in CNN by Tensorflow. 
+	\subsection{Training sample size}% (fold)
+	\label{sub:full_event_training_sample_size}
+		The event sample size for each type is presented in Table \ref{tab:full_event_sample_size_resnet}
+		\begin{table}[htpb]
+			\centering
+			\caption{The sample size for each type. 80\% samples are used in training, and 20\% samples are used in testing.}
+			\label{tab:full_event_sample_size_resnet}
+			\begin{tabular}{c|c|c|c|c|c|c|c}
+			Case &$\kappa$& $W^+W^+$ & $W^-W^-$ & $ZZ$ & $W^+Z$ & $W^-Z$ & $W^+W^-$ \\ \hline
+			1    & 0.23   & 24k      & 22k      & 24k  & 24k    & 24k    & 24k     
+			\end{tabular}
+		\end{table}
+	% subsection full_event_training_sample_size (end)
+	\subsection{Training results}% (fold)
+	\label{sub:full_event_training_results}
+		The training results are summarized in Table \ref{tab:training_result_event_resnet}.
+		\begin{table}[htpb]
+			\centering
+			\caption{The training results of the full event.}
+			\label{tab:training_result_event_resnet}
+			\resizebox{\textwidth}{!}{
+			\begin{tabular}{c|c|c|cc|cc|cc|cc|cc|cc}
+										 &                    & Overall & \multicolumn{2}{c}{$W^+W^+$} & \multicolumn{2}{c}{$W^-W^-$} & \multicolumn{2}{c}{$ZZ$} & \multicolumn{2}{c}{$W^+Z$} & \multicolumn{2}{c}{$W^-Z$} & \multicolumn{2}{c}{$W^+W^-$} \\
+					  & Sample             & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   \\ \hline
+			CNN        & \multirow{2}{*}{1} & 0.417 & 0.852 & 0.858 & 0.846 & 0.866 & 0.794 & 0.842 & 0.728 & 0.834 & 0.698 & 0.834 & 0.707 & 0.833 \\
+			CNN-ResNet &                    & 0.412 & 0.849 & 0.855 & 0.838 & 0.865 & 0.792 & 0.841 & 0.728 & 0.834 & 0.696 & 0.834 & 0.707 & 0.833
+			\end{tabular}			
+			}
+		\end{table}
+
+		The 10 times training results are presented in Table \ref{tab:training_result_event_resnet_10_times}.
+		\begin{table}[htpb]
+			\centering
+			\caption{The training results of the full event. The average and standard deviation of 10 training are presented.}
+			\label{tab:training_result_event_resnet_10_times}
+			\resizebox{\textwidth}{!}{
+			\begin{tabular}{c|c|cc|cc|cc|cc|cc|cc}
+            & Overall & \multicolumn{2}{c}{$W^+W^+$} & \multicolumn{2}{c}{$W^-W^-$} & \multicolumn{2}{c}{$ZZ$} & \multicolumn{2}{c}{$W^+Z$} & \multicolumn{2}{c}{$W^-Z$} & \multicolumn{2}{c}{$W^+W^-$} \\ 
+						& ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   & AUC   & ACC   \\ \hline
+			CNN         & 0.415 & 0.851 & 0.855 & 0.844 & 0.861 & 0.789 & 0.838 & 0.699 & 0.831 & 0.705 & 0.836 & 0.727 & 0.841 \\
+			std.		& 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.002 & 0.001 \\ \hline
+			CNN-ResNet  & 0.404 & 0.846 & 0.855 & 0.837 & 0.859 & 0.769 & 0.835 & 0.691 & 0.831 & 0.700 & 0.836 & 0.715 & 0.841 \\
+			std.		& 0.005 & 0.003 & 0.001 & 0.003 & 0.002 & 0.011 & 0.002 & 0.003 & 0.001 & 0.004 & 0.001 & 0.008 & 0.001
+			\end{tabular}
+			}
+		\end{table}
+
+	% subsection full_event_training_results (end)
+% section resnet (end)		
+\section{ResNet with background sample}% (fold)
+\label{sec:resnet_with_background_sample}
+	This section trains the classifier with the signal and background samples.
+	\subsection{Training samples}% (fold)
+	\label{sub:training_samples}
+		The background sample selection methods are shown in Sec. \ref{sec:background_sample}. The event sample size for each type is presented in Table \ref{tab:full_event_sample_size_with_bkg}.
+		\begin{table}[htpb]
+			\centering
+			\caption{The sample size for each type. 80\% samples are used in training, and 20\% samples are used in testing.}
+			\label{tab:full_event_sample_size_with_bkg}
+			\begin{tabular}{c|c|c|c|c|c|c|c|c}
+			Case &$\kappa$& $W^+W^+$ & $W^-W^-$ & $ZZ$ & $W^+Z$ & $W^-Z$ & $W^+W^-$ & Background \\ \hline
+			1    & 0.23   & 22k      & 22k      & 22k  & 22k    & 22k    & 22k      & 22k   
+			\end{tabular}
+		\end{table}
+
+	% subsection training_samples (end)
+	\subsection{Training results}% (fold)
+	\label{sub:full_event_training_results_with_background}
+		The training results are summarized in Table \ref{tab:training_result_event_resnet_with_bkg}. The background sample is easy to distinguish from the signal events.
+		\begin{table}[htpb]
+			\centering
+			\caption{The training results with the background samples. The average and standard deviation of 10 training are presented.}
+			\label{tab:training_result_event_resnet_with_bkg}
+			\resizebox{\textwidth}{!}{
+			\begin{tabular}{c|c|c|c|c|c|c|c|c}
+					   & ACC         &\multicolumn{7}{c}{AUC}                                               \\
+					   & Overall     & $W^+W^+$ & $W^-W^-$ & $ZZ$  & $W^+Z$ & $W^-Z$ & $W^+W^-$ & Background \\ \hline
+			CNN-ResNet & 0.502       & 0.875    & 0.867    & 0.833 & 0.752  & 0.757  & 0.772    & 0.998      \\
+			std.       & 0.002       & 0.002    & 0.002    & 0.003 & 0.002  & 0.002  & 0.003    & 0.001     
+			\end{tabular}			
+			}
+		\end{table}
+
+		The total accuracy seems better than the previous classifier. The improvement almost comes from the background event, because the accuracy of background events is very close to 100\%. If we use this classifier test on samples without background events, then the accuracy is 42.4\%, which is consistent with previous training results.
+
+
+	% subsection full_event_training_results_with_background (end)
+
+% section resnet_with_background_sample (end)		
 \end{document} 
